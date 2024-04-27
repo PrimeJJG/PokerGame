@@ -1,19 +1,22 @@
-#ifndef Deck
-#define Deck
+#ifndef Deck_h
+#define Deck_h
 
 #include "Card.hpp"
 #include<vector>
+#include <random>
+#include <algorithm>
 
 class Deck {
     private:
-        std::vector<Card> deck; // Represents the current deck or full deck?
+        std::vector<Card> cardsInDeck; // Represents the full deck
+        std::vector<Card> cardsOutsideDeck;
     public:
-        void resetDeck();
-        void dealCards();
-        void shuffle();
-        Card drawCard();
         Deck(); // init the 52 card deck
         ~Deck();
+        void resetDeck();
+        void shuffle();
+        Card drawCard();
+        void addToOutsideDeck(Card& card);
 };
 
-#endif // Deck
+#endif // Deck_h

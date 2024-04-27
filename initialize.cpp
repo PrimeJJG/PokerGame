@@ -2,11 +2,12 @@
 
 int main() {
     char startGame;
-    PokerGame *newGame = new PokerGame();
+    Deck* deck = new Deck();
+    PokerGame* newGame = new PokerGame(deck);
     if (newGame->startGame()) {
         bool quit = false;
         while (!quit) {
-            newGame->setupGame();
+            newGame->setupGame(*deck);
             if (newGame->playAgain()) {
                 continue;
             }
@@ -14,6 +15,7 @@ int main() {
                 quit = true;
                 newGame->getFinalScore();
                 delete newGame;
+                delete deck;
             }
         }
         return 0;

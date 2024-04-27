@@ -1,6 +1,6 @@
 #include "PokerGame.hpp"
 
-PokerGame::PokerGame() : waged(0), reward(0) {}
+PokerGame::PokerGame(Deck* deck) : waged(0), reward(0), totalWaged(0) {}
 
 PokerGame::~PokerGame() {}
 
@@ -19,31 +19,44 @@ bool PokerGame::playAgain() {
     char choice;
     std::cout << "Play Again? (y/n)" << std::endl;
     std::cin >> choice;
-    if (choice == 'y') {
-        return true;
-    }
+    return (choice == 'y');
 }
 
-int PokerGame::getFinalScore() {
-    int totWaged = this->getWaged();
-    int totReward = this->getReward();
-    int diff = totReward - totWaged;
+void PokerGame::getFinalScore() {
+    // int totWaged = this->getTotalWaged();
+    // int totReward = this->getReward();
+    int diff = reward - totalWaged;
     if (diff < 0) {
         std::cout << "You lost " << -1*diff << " points." << std::endl;
     }
     else {
         std::cout << "You won " << diff << " points." << std::endl;
     }
+    // Add logic to clear console
 }
 
-void PokerGame::setupGame() {
+void PokerGame::setupGame(Deck& deck) {
     // Will setup a new game by printing rules, dealing cards, etc.
     printRules();
-    Hand *hand = new Hand();
-    hand->dealCards();
-    printCards(); // add this to other
-    handlePlayerAction();
-    evaluateRound(hand);
+    for (int i = 0; i < 5; i++) {
+        deck.shuffle();
+    }
+    Hand *hand = new Hand(deck);
+    printCards(*hand);
+    wageAmount();
+    handlePlayerAction(*hand, deck);
+    evaluateRound(*hand);
+    printCards(*hand);
+    printScore();
+    deck.resetDeck();
+}
+
+void PokerGame::wageAmount() {
+    std::cout << "Enter Amount to Wage: ";
+    int amount;
+    std::cin >> amount;
+    totalWaged += amount;
+    waged = amount;
 }
 
 int PokerGame::getWaged() {
@@ -53,43 +66,58 @@ int PokerGame::getReward() {
     return this->reward;
 }
 
-void PokerGame::dealCards() {
-    // Might add it to Deck, but this will get 5 cards from the deck
-}
-
-void PokerGame::handlePlayerAction() {
+void PokerGame::handlePlayerAction(Hand& hand, Deck& deck) {
     // This will check user input for changing the cards
+    std::string input;
+    std::cout << "Enter Positions to Replace Cards. E.g. If you want to select positions 1, 2 and 4, type 124.\nTo not replace any card and continue with current hand, press 0.\nHit enter." << std::endl;
+    std::cin >> input;
+    for (auto c: input) {
+        if (c-'0' > 5 || c-'0' < 0) {
+            std::cout << "Invalid Input, Try Again\n";
+            handlePlayerAction(hand, deck);
+        }
+        else {
+            if (c - '0' == 0) return;
+            hand.replaceCard(c - '0', deck);
+        }
+    }
 }
 
 void PokerGame::evaluateRound(Hand& hand) {
     // This will evaluate the cards using rules
-    hand->evaluateHand();
+    int multiplier = hand.evaluateHand();
+    giveReward(multiplier);
 }
 
-int PokerGame::giveReward() {
+void PokerGame::giveReward(int multiplier) {
     // This will multiply the waged amount and increase the reward var
+    reward += waged * multiplier;
 }
 
-void PokerGame::printCards() {
+void PokerGame::printCards(Hand& hand) {
     // This will print the game, change code:
-    std::cout << "\033[3;1H"; // Move cursor to the row below the rules, change 3 and 1
-    std::cout << "\033[0J";   // Clear from cursor position to the end of the screen
+    // std::cout << "\033[3;1H"; // Move cursor to the row below the rules, change 3 and 1
+    // std::cout << "\033[0J";   // Clear from cursor position to the end of the screen
+    std::vector currentCards = hand.getCardsDealt();
+    for (auto card: currentCards) {
+        card.printCard();
+    }
 }
 
 void PokerGame::printRules() {
-    std::string rules = "Pattern\tMultiplier\n"
-    "Royal Flush\tx250\n";
-    "Straight Flush\tx50\n";
-    "Four of a kind\tx25\n";
-    "Full House\tx9\n";
-    "Flush\tx6\n";
-    "Straight\tx4\n";
-    "Three of a kind\tx3\n";
-    "Two Pairs\tx2\n";
+    std::string rules = "Pattern\t\tMultiplier\n"
+    "Royal Flush\tx250\n"
+    "Straight Flush\tx50\n"
+    "Four of a kind\tx25\n"
+    "Full House\tx9\n"
+    "Flush\t\tx6\n"
+    "Straight\tx4\n"
+    "Three of a kind\tx3\n"
+    "Two Pairs\tx2\n"
     "Jacks or better\tx1\n";
     std::cout << rules;
 }
 
 void PokerGame::printScore() {
-    // This will print waged amount and reward at the end of screen
+    std::cout << waged << " " << reward << std::endl;
 }
