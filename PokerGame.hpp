@@ -1,7 +1,6 @@
 #ifndef PokerGame_h
 #define PokerGame_h
 
-#include "Card.hpp"
 #include "Deck.hpp"
 #include "Hand.hpp"
 #include<vector>
@@ -24,7 +23,6 @@ class PokerGame {
         void evaluateRound(Hand&);
         void giveReward(int);
         void getFinalScore();
-        // void printGame();
         void printRules();
         void printScore();
         void printCards(Hand&);

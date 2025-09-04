@@ -6,15 +6,25 @@
 #include <algorithm>
 #include <unordered_map>
 
+enum class HandRank {
+    None,
+    JacksOrBetter,
+    Pair,
+    TwoPairs,
+    ThreeOfAKind,
+    Straight,
+    Flush,
+    FullHouse,
+    FourOfAKind,
+    StraightFlush,
+    RoyalFlush
+};
+
 class Hand {
     private:
-        // Can keep this to optimize not checking flush and straight again
-        // enum class HandEvaluation {
-        //     RoyalFlush, ...
-        // };
-        // HandEvaluation value;
         std::vector<Card> cardsDealt;
         std::unordered_map<int, int> valueCount;
+        HandRank rank;
     public:
         Hand(Deck&); // Should have implementation to deal hand?
         ~Hand();
@@ -29,9 +39,12 @@ class Hand {
         bool isFullHouse();
         bool isThreeOfAKind();
         bool isTwoPairs();
+        bool isPair();
         bool isJacksOrBetter();
-        int evaluateHand();
+        HandRank evaluateHand();
         std::vector<Card>& getCardsDealt();
+        int getScoreForRank(HandRank);
+        std::string getMessageForRank(HandRank);
 };
 
 #endif // Hand_h

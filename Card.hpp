@@ -20,6 +20,7 @@ class Card {
         void printCard();
         int getValue();
         Suit getSuit();
+        std::string suitToString(Suit suit);
         bool operator<(const Card) const;
 };
 

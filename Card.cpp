@@ -4,8 +4,31 @@ Card::Card(std::string color, int value, Suit suit, std::wstring uStringRep) : c
 Card::~Card() {}
 
 void Card::printCard() {
-    // std::wcout<<unicodeStringRepresentation<<std::endl;
-    std::cout << color << " " << value << std::endl;
+    if (value == 0 || value >= 10) {
+        // For face cards and Ace
+        std::string face = "";
+        switch(value) {
+            case 0:
+                face = "A";
+                break;
+            case 10:
+                face = "J";
+                break;
+            case 11:        
+                face = "Q";
+                break;
+            case 12:
+                face = "K";
+                break;
+            default:
+                face = "?";
+        }
+        std::cout << suitToString(suit) << " " << face << std::endl;
+    }
+    else {
+        // For numbered cards
+        std::cout << suitToString(suit) << " " << value + 1 << std::endl;
+    }
 }
 
 int Card::getValue() {
@@ -14,6 +37,21 @@ int Card::getValue() {
 
 Suit Card::getSuit() {
     return suit;
+}
+
+std::string Card::suitToString(Suit suit) {
+    switch(suit) {
+        case Suit::Club:
+            return "Club";
+        case Suit::Diamond:
+            return "Diamond";
+        case Suit::Heart:
+            return "Heart";
+        case Suit::Spade:
+            return "Spade";
+        default:
+            return "Unknown Suit";
+    }
 }
 
 bool Card::operator<(const Card other) const {

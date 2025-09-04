@@ -89,50 +89,60 @@ bool Hand::isTwoPairs() {
     return (count == 2); 
 }
 
+bool Hand::isPair() {
+    return valueCounter(2);
+}
+
 bool Hand::isJacksOrBetter() {
     return (valueCount[1] >= 2 || valueCount[11] >= 2 || valueCount[12] >= 2 || valueCount[13] >= 2);
 }
 
-int Hand::evaluateHand() {
-    if (isRoyalFlush()) {
-        std::cout << "You got a Royal Flush!" << std::endl;
-        return 250;
-    }
-    if (isFlush()) {
-        std::cout << "You got a Flush!" << std::endl;
-        return 50;
-    }
-    if (isStraight()) {
-        std::cout << "You got a Straight!" << std::endl;
-        return 25;
-    }
-    if (isStraightFlush()) {
-        std::cout << "You got a Straight Flush!" << std::endl;
-        return 9;
-    }
-    if (isFourOfAKind()) {
-        std::cout << "You got Four of a Kind!" << std::endl;
-        return 6;
-    }
-    if (isFullHouse()) {
-        std::cout << "You got a Full House!" << std::endl;
-        return 4;
-    }
-    if (isThreeOfAKind()) {
-        std::cout << "You got Three of a Kind!" << std::endl;
-        return 3;
-    }
-    if (isTwoPairs()) {
-        std::cout << "You got Two Pairs!" << std::endl;
-        return 2;
-    }
-    if (isJacksOrBetter()) {
-        std::cout << "You got Jacks or better!" << std::endl;
-        return 1;
-    }
-    else return 0;
+HandRank Hand::evaluateHand() {
+    if (isRoyalFlush()) return HandRank::RoyalFlush;
+    if (isFlush()) return HandRank::Flush;
+    if (isStraight()) return HandRank::Straight;
+    if (isStraightFlush()) return HandRank::StraightFlush;
+    if (isFourOfAKind()) return HandRank::FourOfAKind;
+    if (isFullHouse()) return HandRank::FullHouse;
+    if (isThreeOfAKind()) return HandRank::ThreeOfAKind;
+    if (isTwoPairs()) return HandRank::TwoPairs;
+    if (isPair()) return HandRank::Pair;
+    if (isJacksOrBetter()) return HandRank::JacksOrBetter;
+    return HandRank::None;
 }
 
 std::vector<Card>& Hand::getCardsDealt() {
     return cardsDealt;
+}
+
+int Hand::getScoreForRank(HandRank rank) {
+    switch (rank) {
+        case HandRank::RoyalFlush:     return 250;
+        case HandRank::Flush:          return 50;
+        case HandRank::Straight:       return 25;
+        case HandRank::StraightFlush:  return 9;
+        case HandRank::FourOfAKind:    return 6;
+        case HandRank::FullHouse:      return 4;
+        case HandRank::ThreeOfAKind:   return 3;
+        case HandRank::TwoPairs:       return 2;
+        case HandRank::Pair:           return 1;
+        case HandRank::JacksOrBetter:  return 0.5;
+        default:                       return 0;
+    }
+}
+
+std::string Hand::getMessageForRank(HandRank rank) {
+    switch (rank) {
+        case HandRank::RoyalFlush:     return "You got a Royal Flush!\n";
+        case HandRank::Flush:          return "You got a Flush!\n";
+        case HandRank::Straight:       return "You got a Straight!\n";
+        case HandRank::StraightFlush:  return "You got a Straight Flush!\n";
+        case HandRank::FourOfAKind:    return "You got Four of a Kind!\n";
+        case HandRank::FullHouse:      return "You got a Full House!\n";
+        case HandRank::ThreeOfAKind:   return "You got Three of a Kind!\n";
+        case HandRank::TwoPairs:       return "You got Two Pairs!\n";
+        case HandRank::Pair:           return "You got a Pair!\n";
+        case HandRank::JacksOrBetter:  return "You got Jacks or Better!\n";
+        default:                       return "";
+    }
 }
